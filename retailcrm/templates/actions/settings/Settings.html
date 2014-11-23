@@ -13,7 +13,7 @@ function checkIntaro() {
 }
 
 function loadContent() {
-	$("#tab-content-retail").html("<div class=\"retail-loading\">Обновление...<i class=\"icon16 loading\"></i></div>");
+    $("#tab-content-retail").html("<div class=\"retail-loading\">Обновление...<i class=\"icon16 loading\"></i></div>");
     $('#retail-tabs').load("?plugin=retailcrm&module=settings #retail-tabs li");
     $('#tab-content-retail').load("?plugin=retailcrm&module=settings #tab-content-retail .tab-pane");
 }
