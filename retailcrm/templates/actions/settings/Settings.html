@@ -1,0 +1,405 @@
+<link rel="stylesheet" href="{$wa_app_static_url}plugins/retailcrm/css/main.css" type="text/css"/>
+
+{literal}
+<script type="text/javascript">
+function checkIntaro() {
+    if(window.location.hash == "#/retailcrm/intaro") {
+        $("#retail-analytics").removeClass("retail-no");
+        $("#analytics").removeClass("retail-no");
+    } else {
+        $("#retail-analytics").remove();
+        $("#analytics").remove();
+    }
+}
+
+function loadContent() {
+	$("#tab-content-retail").html("<div class=\"retail-loading\">Обновление...<i class=\"icon16 loading\"></i></div>");
+    $('#retail-tabs').load("?plugin=retailcrm&module=settings #retail-tabs li");
+    $('#tab-content-retail').load("?plugin=retailcrm&module=settings #tab-content-retail .tab-pane");
+}
+
+$(".nav-tabs").on("click", "a", function(){
+    $(this).parent("li").siblings(".active").removeClass("active");
+    $(this).parent("li").addClass("active");
+    $("#tab-content-retail > #" + $(this).attr("goto")).siblings(".active").removeClass("active");
+    $("#tab-content-retail > #" + $(this).attr("goto")).addClass("active");
+    $.get("?plugin=retailcrm&action=setpage&page=" + $(this).attr("goto"), function(response) {
+    });
+});
+
+$("#plugins-settings-form").submit(function () {
+    var form = $(this);
+    $.post(form.attr('action'), form.serialize(), function (response) {
+        response = jQuery.parseJSON(response);
+        if (response.status == 'ok') {
+            loadContent();
+            checkIntaro();
+        }
+        if (response.status == 'fail') {
+            $('#retail-tabs').load("?plugin=retailcrm&module=settings #retail-tabs li");
+            $(".tab-pane.active .retail-connect .form-control").each(function(item){
+                var val = $(this).val();
+                var parent = $(this).parent(".form-group");
+                if(val == null || val == "") {
+                    parent.removeClass("has-success").addClass("has-error");
+                } else {
+                    parent.removeClass("has-error").addClass("has-success");
+                }
+            });
+        }
+    });
+});
+
+$("#tab-content-retail").on("click", ".upload", function(){
+    $(this).html("<i class=\"icon16 loading\"></i>");
+    $.get($(this).attr("action"), function(response) {
+        response = jQuery.parseJSON(response);
+        if (response.status == 'ok') {
+            loadContent();
+            checkIntaro();
+        }
+    });
+});
+
+$(".submit").on("click", ".refresh", function(){
+    loadContent();
+    checkIntaro();
+});
+
+$( document ).ready(function() {
+    checkIntaro();
+});
+</script>
+{/literal}
+<div class="page-header">
+    <h1>Настройки плагина</h1>
+</div>
+<div class="fields form">
+    {$wa->csrf()}
+    <div class="tabpanel" role="tabpanel">
+        <ul class="nav nav-tabs" id="retail-tabs" role="tablist">
+            <li role="presentation" {if $settings.setPage == 'general' || !$settings.setPage}class="active"{/if}><a goto="general" role="tab" data-toggle="tab">Общие настройки</a></li>
+            {if $settings.url && $settings.key}
+                <li role="presentation" {if $settings.setPage == 'handbook'}class="active"{/if}><a goto="handbook" role="tab" data-toggle="tab">Настройка справочников</a></li>
+                <li role="presentation" {if $settings.setPage == 'order-value'}class="active"{/if}><a goto="order-value" role="tab" data-toggle="tab">Cоответствия свойств заказа</a></li>
+                <li role="presentation" {if $settings.setPage == 'offers-value'}class="active"{/if}><a goto="offers-value" role="tab" data-toggle="tab">Cоответствия свойств товаров</a></li>
+                <li role="presentation" {if $settings.setPage == 'additionally'}class="active"{/if}><a goto="additionally" role="tab" data-toggle="tab">Дополнительно</a></li>
+            {/if}
+            <li role="presentation" id="retail-analytics" class="retail-no"><a goto="analytics" role="tab" data-toggle="tab">Analytics</a></li>
+        </ul>
+
+        <form action="?plugin=retailcrm&action=save" method="post" id="plugins-settings-form">
+        <div id="tab-content-retail" class="tab-content-retail">
+        {if $settings.url && $settings.key}
+            <div class="retail-message alert-success">
+                <strong>Внимание!</strong> Часовой пояс в CRM должен совпадать с часовым поясом в магазине, настройки часового пояса CRM можно задать по адресу:
+                <a class="alert-link" href="{$settings.url}admin/settings#t-main">{$settings.url}admin/settings#t-main</a>
+            </div>
+        {/if}
+            <div role="tabpanel" class="tab-pane {if $settings.setPage == 'general' || !$settings.setPage}active{/if}" id="general">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Системные настройки</div>
+                    <div class="panel-body">
+                        <div class="checkbox">
+                            <label>
+                                <input name="retailcrm[options][status]" type="checkbox" value="1" {if $settings.status}checked{/if}>
+                                Включить плагин
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="retail-shopname" class="control-label">Название магазина:</label>
+                            <input type="text" name="retailcrm[options][shopname]" class="form-control" id="retail-shopname" placeholder="Название магазина"
+                            value="{if $settings.shopname}{$settings.shopname}{else}{$companyName}{/if}">
+                        </div>
+                        <div class="form-group">
+                            <label for="retail-companyname" class="control-label">Название компании:</label>
+                            <input type="text" name="retailcrm[options][companyname]" class="form-control" id="retail-companyname" placeholder="Название компании"
+                            value="{if $settings.companyname}{$settings.companyname}{else}{$companyName}{/if}">
+                        </div>
+                        <div class="form-group">
+                            <label for="retail-siteurl" class="control-label">Адрес сайта:</label>
+                            <input type="text" name="retailcrm[options][siteurl]" class="form-control" id="retail-siteurl" placeholder="http://yoursite.com/"
+                            value="{if $settings.siteurl}{$settings.siteurl}{/if}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Настройки соединения</div>
+                    <div class="panel-body retail-connect">
+                        <div class="form-group">
+                            <label for="retail-url" class="control-label">Адрес RetailCRM:</label>
+                            <input type="text" name="retailcrm[options][url]" class="form-control" id="retail-url" placeholder="https://demo.intarocrm.ru"
+                            value="{if $settings.url}{$settings.url}{/if}">
+                        </div>
+                        <div class="form-group">
+                            <label for="retail-key" class="control-label">Ключ авторизации:</label>
+                            <input type="text" name="retailcrm[options][key]" class="form-control" id="retail-key" placeholder="BTKPmnV9ojJLj0BTYjoKADHimiODE199"
+                            value="{if $settings.key}{$settings.key}{/if}">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            {if $settings.url && $settings.key}
+            <div role="tabpanel" class="tab-pane {if $settings.setPage == 'handbook'}active{/if}" id="handbook">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                    Способы доставки
+                        <button type="button" class="btn btn-primary btn-head upload"
+                        action="?plugin=retailcrm&action=upload&upload=deliveryTypes">Выгрузить</button>
+                    </div>
+                    <div class="panel-body">
+                    {foreach from=$settings.site.deliveryTypes key=code item=params}
+                        <div class="form-group">
+                            <label for="retail-deliveryTypes-{$code}" class="control-label">{$params.name}</label>
+                            <select name="retailcrm[options][deliveryTypes][{$code}]" class="form-control" id="#retail-deliveryTypes-{$code}">
+                                <option></option>
+                                {foreach from=$settings.crm.deliveryTypes key=crmCode item=crmParams}
+                                    <option value="{$crmCode}" 
+                                    {if $settings.deliveryTypes.$code == $crmCode}
+                                    selected
+                                    {/if}>
+                                    {$crmParams.name}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    {/foreach}
+                    </div>
+                </div>
+                
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                    Способы оплаты
+                        <button type="button" class="btn btn-primary btn-head upload"
+                        action="?plugin=retailcrm&action=upload&upload=paymentTypes">Выгрузить</button>
+                    </div>
+                    <div class="panel-body">
+                    {foreach from=$settings.site.paymentTypes key=code item=params}
+                        <div class="form-group">
+                            <label for="retail-paymentTypes-{$code}" class="control-label">{$params.name}</label>
+                            <select name="retailcrm[options][paymentTypes][{$code}]" class="form-control" id="#retail-paymentTypes-{$code}">
+                                <option></option>
+                                {foreach from=$settings.crm.paymentTypes key=crmCode item=crmParams}
+                                    <option value="{$crmCode}" 
+                                    {if $settings.paymentTypes.$code == $crmCode}
+                                    selected
+                                    {/if}>
+                                    {$crmParams.name}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    {/foreach}
+                    </div>
+                </div>
+                
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                    Статусы
+                    </div>
+                    <div class="panel-body">
+                    {foreach from=$settings.site.statuses key=code item=params}
+                        <div class="form-group">
+                            <label for="retail-statuses-{$code}" class="control-label">{$params.name}</label>
+                            <select name="retailcrm[options][statuses][{$code}]" class="form-control" id="#retail-statuses-{$code}">
+                                <option></option>
+                                {foreach from=$settings.crm.statuses key=crmCode item=crmParams}
+                                    <option value="{$crmCode}" 
+                                    {if $settings.statuses.$code == $crmCode}
+                                    selected
+                                    {/if}>
+                                    {$crmParams.name}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    {/foreach}
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div role="tabpanel" class="tab-pane {if $settings.setPage == 'order-value'}active{/if}" id="order-value">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Физическое лицо</div>
+                    <div class="panel-body">
+                    {foreach from=$settings.crm.contactValue key=code item=params}
+                        <div class="form-group">
+                            <label for="retail-person-value-{$code}" class="control-label">{$params}</label>
+                            <select name="retailcrm[options][order][person][{$code}]" class="form-control" id="#retail-person-value-{$code}">
+                                <option></option>
+                                {foreach from=$settings.site.contactValue key=crmCode item=crmParams}
+                                    <option value="{$crmCode}" 
+                                    {if $settings.order.person.$code == $crmCode}
+                                    selected
+                                    {/if}>
+                                    {$crmParams}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    {/foreach}
+                    {foreach from=$settings.crm.addressValue key=code item=params}
+                        <div class="form-group">
+                            <label for="retail-person-value-{$code}" class="control-label">{$params}</label>
+                            <select name="retailcrm[options][order][person][{$code}]" class="form-control" id="#retail-person-value-{$code}">
+                                <option></option>
+                                {foreach from=$settings.site.addressValue key=crmCode item=crmParams}
+                                    <option value="{$crmCode}" 
+                                    {if $settings.order.person.$code == $crmCode}
+                                    selected
+                                    {/if}>
+                                    {$crmParams}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    {/foreach}
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Юридическое лицо</div>
+                    <div class="panel-body">
+                    {foreach from=$settings.crm.contactValue key=code item=params}
+                        <div class="form-group">
+                            <label for="retail-company-value-{$code}" class="control-label">{$params}</label>
+                            <select name="retailcrm[options][order][company][{$code}]" class="form-control" id="#retail-company-value-{$code}">
+                                <option></option>
+                                {foreach from=$settings.site.contactValue key=crmCode item=crmParams}
+                                    <option value="{$crmCode}" 
+                                    {if $settings.order.company.$code == $crmCode}
+                                    selected
+                                    {/if}>
+                                    {$crmParams}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    {/foreach}
+                    {foreach from=$settings.crm.addressValue key=code item=params}
+                        <div class="form-group">
+                            <label for="retail-person-value-{$code}" class="control-label">{$params}</label>
+                            <select name="retailcrm[options][order][person][{$code}]" class="form-control" id="#retail-person-value-{$code}">
+                                <option></option>
+                                {foreach from=$settings.site.addressValue key=crmCode item=crmParams}
+                                    <option value="{$crmCode}" 
+                                    {if $settings.order.person.$code == $crmCode}
+                                    selected
+                                    {/if}>
+                                    {$crmParams}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    {/foreach}
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div role="tabpanel" class="tab-pane {if $settings.setPage == 'offers-value'}active{/if}" id="offers-value">
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Свойства</div>
+                    <div class="panel-body">
+                    {foreach from=$settings.crm.offers key=code item=params}
+                        <div class="form-group">
+                            <label for="retail-offers-{$code}" class="control-label">{$params}</label>
+                            <select name="retailcrm[options][offers][{$code}]" class="form-control" id="#retail-offers-{$code}">
+                                <option></option>
+                                {foreach from=$settings.site.offers key=crmCode item=crmParams}
+                                    <option value="{$crmCode}" 
+                                    {if $settings.offers.$code == $crmCode}
+                                    selected
+                                    {/if}>
+                                    {$crmParams}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    {/foreach}
+                    </div>
+                </div>
+
+            </div>
+            
+            <div role="tabpanel" class="tab-pane {if $settings.setPage == 'additionally'}active{/if}" id="additionally">
+                <div class="retail-message alert-danger">
+                    <strong>Внимание!!!</strong> Отнеситесь к данным настройкам со всей серьезностью
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">Настройки</div>
+                    <div class="panel-body">
+                        <div class="checkbox">
+                            <label>
+                                <input name="retailcrm[options][number]" type="checkbox" value="1" {if $settings.number}checked{/if}>
+                                Включить сопостовление номеров заказа
+                            </label>
+                        </div>
+                        <div class="checkbox">
+                            <label>
+                                <input name="retailcrm[options][removeorder]" type="checkbox" value="1" {if $settings.removeorder}checked{/if}>
+                                Удалять заказы удалленые в CRM
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Настройки маршрутизации</div>
+                    <div class="panel-body">
+                        <div class="checkbox">
+                            <label>
+                                <input name="retailcrm[options][routing][addcategory]" type="checkbox" value="1" {if $settings.routing.addcategory}checked{/if}>
+                                Используются категории
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="retail-routing-catalog" class="control-label">Символьный код каталога:</label>
+                            <input type="text" name="retailcrm[options][routing][catalog]" class="form-control" id="retail-routing-catalog" placeholder="shop"
+                            value="{if $settings.routing.catalog}{$settings.routing.catalog}{/if}">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            {/if}
+
+            <div role="tabpanel" class="tab-pane retail-no" id="analytics">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Настройки</div>
+                    <div class="panel-body">
+                        <div class="checkbox">
+                            <label>
+                                <input name="retailcrm[options][analytics][status]" type="checkbox" value="1" {if $settings.analytics.status}checked{/if}>
+                                Включить аналитику
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label for="idanalytics" class="control-label">Идентификатор:</label>
+                            <input type="text" name="retailcrm[options][analytics][id]" class="form-control" id="idanalytics" placeholder="UA-XXXXXXXX-1"
+                            value="{if $settings.analytics.id}{$settings.analytics.id}{/if}">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="retail-foot">
+            <div class="field">
+                <div class="value submit">
+                   <input type="submit" class="btn btn-success" value="Сохранить">
+                   <button type="button" class="btn btn-primary refresh">Обновить</button>
+                   <span id="plugins-settings-form-status" style="display: none">
+                       <i class="icon16 yes"></i>
+                   </span>
+                </div>
+            </div>
+            <a class="retailcrm" href="http://www.retailcrm.ru/" target="_blank">
+                <img src="{$wa_app_static_url}plugins/retailcrm/img/logo.png" alt="retailCRM">
+            </a>
+         </div>
+
+        </form>
+    </div>
+</div>
