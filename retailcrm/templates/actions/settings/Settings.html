@@ -365,7 +365,7 @@ $( document ).ready(function() {
 
             <div role="tabpanel" class="tab-pane retail-no" id="analytics">
                 <div class="panel panel-default">
-                    <div class="panel-heading">Настройки</div>
+                    <div class="panel-heading">Аналитика</div>
                     <div class="panel-body">
                         <div class="checkbox">
                             <label>
@@ -377,6 +377,17 @@ $( document ).ready(function() {
                             <label for="idanalytics" class="control-label">Идентификатор:</label>
                             <input type="text" name="retailcrm[options][analytics][id]" class="form-control" id="idanalytics" placeholder="UA-XXXXXXXX-1"
                             value="{if $settings.analytics.id}{$settings.analytics.id}{/if}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Системные настройки</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="email" class="control-label">E-mail:</label>
+                            <input type="text" name="retailcrm[options][email]" class="form-control" id="email" placeholder="integration@retailcrm.ru"
+                            value="{if $settings.email}{$settings.email}{else}integration@retailcrm.ru{/if}">
                         </div>
                     </div>
                 </div>

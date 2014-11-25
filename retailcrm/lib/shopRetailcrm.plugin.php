@@ -85,7 +85,7 @@ class shopRetailcrmPlugin extends shopPlugin
         }
 
         if ($type != 'history-log') {
-            mail("d.slonyara@gmail.com", "Ошибка обмена retailCRM", $message, $headers);
+            mail($settings["email"], "Ошибка обмена retailCRM", $message, $headers);
         }
     }
 
