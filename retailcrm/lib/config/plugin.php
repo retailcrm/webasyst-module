@@ -10,7 +10,7 @@ return array(
     'name'          => 'Retailcrm',
     'description'   => 'Автоматизация интернет-продаж',
     'vendor'        => '1009747',
-    'version'       => '3.0.0',
+    'version'       => '3.0.1',
     'img'           => 'img/icon.png',
     'shop_settings' => true,
     'frontend'      => true,

@@ -203,7 +203,7 @@ class shopRetailcrmPlugin extends shopPlugin
             $regions[ $value["code"] ] = $value["name"];
         }
 
-        foreach ($contact->getContacts("*") as $key => $value) {
+        foreach ($contact->getContacts("*", 0, 99999) as $key => $value) {
             $customer = array();
             $customer["externalId"] = $value["id"];
             $customer["createdAt"] = $value["create_datetime"];
@@ -217,8 +217,10 @@ class shopRetailcrmPlugin extends shopPlugin
                 $customer["contragentType"] = "legal-entity";
             }
 
-            if (!isset($settings["lastName"]) || empty($settings["lastName"])) {
-                if (isset($settings["firstName"]) && !empty($settings["firstName"])) {
+            if (!isset($settings["lastName"]) || empty($settings["lastName"]) ||
+                !isset($value[ $settings["lastName"] ]) || empty($value[ $settings["lastName"] ])) {
+                if (isset($settings["firstName"]) && !empty($settings["firstName"]) &&
+                    isset($value[ $settings["firstName"] ]) && !empty($value[ $settings["firstName"] ])) {
                     $customer = array_merge($customer,
                         $this->explodeFIO($value[ $settings["firstName"] ]));
                 } else {
@@ -313,13 +315,18 @@ class shopRetailcrmPlugin extends shopPlugin
 
     public function getOrders($customers, $parentSetting)
     {
-        $shopOrders = new shopOrdersCollection();
+        $shopOrders = null;
+        if (class_exists("shopOrdersCollection")) {
+            $shopOrders = new shopOrdersCollection();
+        } else {
+            $shopOrders = new retailcrmOrdersCollection();
+        }
         $orders = array();
 
         $app_settings_model = new waAppSettingsModel();
         $orderFormat = htmlspecialchars($app_settings_model->get('shop', 'order_format', "#100\{\$order.id\}"), ENT_QUOTES, 'utf-8');
 
-        foreach ($shopOrders->getOrders("*") as $key => $value) {
+        foreach ($shopOrders->getOrders("*", 0, 99999) as $key => $value) {
             $order = array();
             $setting = array();
 

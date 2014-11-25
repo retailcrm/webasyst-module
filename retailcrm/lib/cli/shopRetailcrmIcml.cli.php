@@ -21,14 +21,14 @@ class shopRetailcrmIcmlCli extends waCliController
             if (!isset($this->settings["shopname"]) || empty($this->settings["shopname"])) {
                 $shop = $companyName;
             } else {
-                $shop = $this->settings["shopname"];
+                $shop = htmlspecialchars($this->settings["shopname"]);
             }
 
             $company = "";
             if (!isset($this->settings["companyname"]) || empty($this->settings["companyname"])) {
                 $company = $companyName;
             } else {
-                $company = $this->settings["companyname"];
+                $company = htmlspecialchars($this->settings["companyname"]);
             }
 
             $string = '<?xml version="1.0" encoding="UTF-8"?>
@@ -76,7 +76,7 @@ class shopRetailcrmIcmlCli extends waCliController
                 continue;
             }
 
-            $e = $this->eCategories->appendChild($this->dd->createElement('category', $value['name']));
+            $e = $this->eCategories->appendChild($this->dd->createElement('category', htmlspecialchars($value['name'])));
             $e->setAttribute('id', $value['id']);
 
             if ($value['parent_id'] != 0) {
@@ -98,12 +98,22 @@ class shopRetailcrmIcmlCli extends waCliController
         }
 
         $productParamsModel = new shopProductFeaturesModel();
-        $productValueModel = new shopFeatureModel();
         $productFields = array();
+        
+        $productValueModel = null;
+        if (method_exists("shopFeatureModel", "getByProduct")) {
+            $productValueModel = new shopFeatureModel();
+        } else {
+            $productValueModel = new retailcrmFeatureModel();
+        }
+
+        $fields = array();
         foreach ($productParamsModel->getAll() as $key => $val) {
-            $fields = $productValueModel->getValues($productValueModel->getByProduct($val["product_id"]));
-            $fields = $fields[ $val["feature_id"] ];
-            $productFields[ $val["product_id"] ][ $fields["code"] ] = $fields["values"][ $val["feature_value_id"] ];
+            if (!isset($fields) || empty($fields)) {
+                $fields = $productValueModel->getValues($productValueModel->getByProduct($val["product_id"]));
+            }
+            $tmpfields = $fields[ $val["feature_id"] ];
+            $productFields[ $val["product_id"] ][ $tmpfields["code"] ] = $tmpfields["values"][ $val["feature_value_id"] ];
         }
 
         foreach ($skus as $key => $val) {
@@ -127,8 +137,8 @@ class shopRetailcrmIcmlCli extends waCliController
                 $name = $productName;
             }
 
-            $e->appendChild($this->dd->createElement('name'))->appendChild($this->dd->createTextNode($name));
-            $e->appendChild($this->dd->createElement('productName'))->appendChild($this->dd->createTextNode($productName));
+            $e->appendChild($this->dd->createElement('name'))->appendChild($this->dd->createTextNode(htmlspecialchars($name)));
+            $e->appendChild($this->dd->createElement('productName'))->appendChild($this->dd->createTextNode(htmlspecialchars($productName)));
 
             $e->appendChild($this->dd->createElement('price', $val['primary_price']));
             if ($val["purchase_price"] > 0) {
@@ -141,12 +151,13 @@ class shopRetailcrmIcmlCli extends waCliController
                 }
             }
 
-            if (!empty($val["image_id"])) {
-                $image = array(
-                    "product_id" => $val["product_id"],
-                    "id"         => $val["image_id"],
-                    "ext"        => $product[ $val["product_id"] ]["ext"]
-                );
+            $image = array(
+                "product_id" => $val["product_id"],
+                "id"         => (!empty($val["image_id"]) && $val["image_id"] != 0) ? $val["image_id"] : $product[ $val["product_id"] ]["image_id"],
+                "ext"        => $product[ $val["product_id"] ]["ext"]
+            );
+
+            if (!empty($image["image_id"]) && !empty($image["product_id"])) {
                 $image = $this->getUrl($image);
                 $e->appendChild($this->dd->createElement('picture', $image));
             }
