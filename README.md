@@ -1,7 +1,7 @@
 Webasyst модуль
 ===============
 
-Модуль Webasyst для взаимодействия с [retailCRM](http://www.retailcrm.ru) через [REST API](http://retailcrm.ru/docs/Разработчики).
+Webasyst модуль для взаимодействия с [retailCRM](http://www.retailcrm.ru) через [REST API](http://retailcrm.ru/docs/Разработчики).
 
 ### Модуль позволяет
 
