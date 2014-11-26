@@ -1,11 +1,12 @@
 Webasyst модуль
 ===============
 
-Webasyst модуль для взаимодействия с [retailCRM](http://www.retailcrm.ru) через [REST API](http://retailcrm.ru/docs/Разработчики).
+Webasyst модуль для интеграции с [retailCRM](http://www.retailcrm.ru) через [REST API](http://retailcrm.ru/docs/Разработчики).
 
 ### Модуль позволяет
 
-* Обмен заказов с retailCRM
+* Выгружать заказы в retailCRM
+* Получать изменения по заказам из retailCRM и сохранять их в магазине
 * Настроить соотвествие справочников retailCRM и Webasyst (статусы, платежи, типы доставки и т.д.)
 * Создание [ICML](http://docs.retailcrm.ru/index.php?n=Разработчики.ФорматICML) (Intaro Markup Language) для выгрузки каталога в retailCRM
 
