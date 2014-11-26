@@ -13,36 +13,28 @@ Webasyst module for interaction with [retailCRM](http://www.retailcrm.ru) throug
 
 #### Marketplace
 
-* You should install module through Webasyst Marketplace
+* Install the module through Webasyst Marketplace
 
 #### Settings
 
 1. Go to the component "Shop"
-2. Select the tab "plugins"
-3. In the left column, click on the plugin "Retailcrm"
+2. Click on the link "plugins"
+3. In the left column, click on the link "Retailcrm"
 4. Make initial settings and click Save
-5. After saving open additional tabs, gently set them and press save
-6. On the first tab switch module
-
-#### Export Customers and Orders
-
-Start with ssh script for customers and orders export
-
-```bash
-/path/to/php /path/to/cli.php shop retailcrmUpload
-```
+5. After saving, additional tabs open, carefully adjust it and click Save
+6. On the first tab, activate the module
 
 #### Export Catalog
 
-Setup cron job for periodically catalog export
+Setup cron to export catalog on schedule
 
 ```bash
 * */12 * * * /path/to/php /path/to/cli.php shop retailcrmIcml
 ```
 
-#### Export new order from CRM to shop
+#### Import new orders from CRM to shop
 
-Setup cron job for exchange between CRM & your shop
+Setup cron to exchange orders between CRM and your store on a schedule
 
 ```bash
 */15 * * * * /path/to/php /path/to/cli.php shop retailcrmHistory
