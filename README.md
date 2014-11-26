@@ -1,10 +1,49 @@
-Shop-Script 5 plugin
-=============
+Webasyst модуль
+===============
 
-Shop-Script 5 plugin for interaction with [retailCRM](http://www.retailcrm.ru) through [REST API](http://retailcrm.ru/docs/Разработчики).
+Модуль Webasyst для взаимодействия с [retailCRM](http://www.retailcrm.ru) через [REST API](http://retailcrm.ru/docs/Разработчики).
 
-Module allows:
+### Модуль позволяет
 
-* Exchange the orders with retailCRM
-* Configure relations between dictionaries of retailCRM and Shop-Script 5 (statuses, payments, delivery types and etc)
-* Generate [ICML](http://docs.retailcrm.ru/index.php?n=Разработчики.ФорматICML) (Intaro Markup Language) for catalog loading by retailCRM
+* Обмен заказов с retailCRM
+* Настроить соотвествие справочников retailCRM и Webasyst (статусы, платежи, типа доставки и т.д.)
+* Создание [ICML](http://docs.retailcrm.ru/index.php?n=Разработчики.ФорматICML) (Intaro Markup Language) для выгрузки каталога в retailCRM
+
+### Установка
+
+#### Marketplace
+
+* Вы должны установить модуль через Webasyst Marketplace
+
+#### Настройки
+
+1. Перейти к компонентному "Магазин"
+2. Выберите вкладку "Плагины"
+3. В левой колонке, нажмите на плагин "Retailcrm"
+4. Произведите первоначальные настройки и нажмите кнопку Сохранить
+5. После сохранения, откроются дополнительные вкладки, осторожно настройте их и нажмите Сохранить
+6. На первой вкладке включите модуль
+
+#### Экспорт Клиентов и Заказов
+
+Запустите по ssh скрипт экспорта клиентов и заказов
+
+```bash
+/path/to/php /path/to/cli.php shop retailcrmUpload
+```
+
+#### Экспорт Каталога
+
+Настройте cron для переодического экспорта каталога
+
+```bash
+* */12 * * * /path/to/php /path/to/cli.php shop retailcrmIcml
+```
+
+#### Экспорт новых заказов из CRM в магазин
+
+Настройте cron для переодического обмена заказов между CRM и вашим магазином
+
+```bash
+*/15 * * * * /path/to/php /path/to/cli.php shop retailcrmHistory
+```
