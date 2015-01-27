@@ -10,12 +10,6 @@ Webasyst модуль для интеграции с [retailCRM](http://www.reta
 * Настроить соотвествие справочников retailCRM и Webasyst (статусы, платежи, типы доставки и т.д.)
 * Создание [ICML](http://docs.retailcrm.ru/index.php?n=Разработчики.ФорматICML) (Intaro Markup Language) для выгрузки каталога в retailCRM
 
-### Установка
-
-#### Marketplace
-
-* Модуль устанавливается через Webasyst Marketplace
-
 #### Настройки
 
 1. Перейдите к компоненту **Магазин**
