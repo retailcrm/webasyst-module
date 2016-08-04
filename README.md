@@ -7,7 +7,7 @@ Webasyst модуль для интеграции с [retailCRM](http://www.reta
 
 * Выгружать заказы в retailCRM
 * Получать изменения по заказам из retailCRM и сохранять их в магазине
-* Настроить соотвествие справочников retailCRM и Webasyst (статусы, платежи, типы доставки и т.д.)
+* Настроить соответствие справочников retailCRM и Webasyst (статусы, платежи, типы доставки и т.д.)
 * Создание [ICML](http://www.retailcrm.ru/docs/Разработчики/ФорматICML) (Intaro Markup Language) для выгрузки каталога в retailCRM
 
 #### Настройки
