@@ -1,5 +1,5 @@
-Webasyst модуль
-===============
+Webasyst модуль [DEPRECATED]
+============================
 
 Webasyst модуль для интеграции с [retailCRM](http://www.retailcrm.ru) через [REST API](http://retailcrm.ru/docs/Разработчики).
 
